@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abogacía</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fdf6fd;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(90deg, #ffd6ec 0%, #d4ebff 100%);
+      color: #7b4fa3;
+      padding: 30px 0 10px 0;
+      text-align: center;
+      font-size: 2.5em;
+      font-weight: bold;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 8px #e3e1f9;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 30px auto 0 auto;
+      padding: 0 20px;
+    }
+    .photos-section {
+      background: #fff8fe;
+      border-radius: 18px;
+      box-shadow: 0 2px 10px #f3e4fa33;
+      margin-bottom: 32px;
+      padding: 20px 16px 16px 16px;
+      text-align: center;
+    }
+    .photos-section h2 {
+      color: #af78e4;
+      margin-bottom: 4px;
+      font-size: 1.3em;
+      font-weight: 700;
+    }
+    #drop-area {
+      border: 2px dashed #ffb6e0;
+      border-radius: 14px;
+      background: #fdf6fd;
+      padding: 22px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      color: #b08ab8;
+      font-size: 1em;
+      transition: border .2s, background .2s;
+    }
+    #drop-area.dragover {
+      border: 2px solid #af78e4;
+      background: #f0e9ff;
+      color: #7b4fa3;
+    }
+    .photos-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .photo-card {
+      background: #ffe4fa;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px #d4ebff44;
+      padding: 7px;
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .photo-card img {
+      max-width: 105px;
+      max-height: 105px;
+      border-radius: 8px;
+      display: block;
+      margin: auto;
+      box-shadow: 0 1px 5px #d4ebff22;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 4px; right: 4px;
+      background: #ffd6ec;
+      border: none;
+      border-radius: 50%;
+      width: 23px; height: 23px;
+      font-size: 1em;
+      color: #af78e4;
+      cursor: pointer;
+      box-shadow: 0 1px 5px #f0e9ff66;
+      transition: background 0.1s;
+    }
+    .delete-btn:hover {
+      background: #ffb6e0;
+      color: #fff;
+    }
+    /* Resto igual que antes */
+    .year-section {
+      margin-bottom: 32px;
+      border-radius: 20px;
+      background: #fff8fe;
+      box-shadow: 0 2px 12px #f3e4fa33;
+      padding: 18px 12px 8px 12px;
+    }
+    .year-title {
+      font-size: 1.6em;
+      color: #af78e4;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-shadow: 0 1px 0 #fff;
+    }
+    .subjects-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 15px;
+      justify-content: flex-start;
+    }
+    .subject {
+      flex: 1 1 210px;
+      min-width: 190px;
+      margin-bottom: 10px;
+      padding: 20px 12px;
+      background: #ffe4fa;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px #d4ebff33;
+      color: #5d4370;
+      font-weight: 500;
+      font-size: 1.05em;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      border: 2px solid #f8c3e2;
+      opacity: 0.7;
+      user-select: none;
+    }
+    .subject.unlocked {
+      background: #d4ebff;
+      color: #3e517a;
+      border: 2px solid #b0e1ff;
+      opacity: 1;
+      font-weight: bold;
+    }
+    .subject.completed {
+      background: #e7ffe8;
+      color: #2e7d51;
+      border: 2px solid #b0ffd9;
+      opacity: 1;
+      text-decoration: line-through;
+    }
+    .subject.optativa {
+      background: #f6f8ff;
+      color: #5a6b7d;
+      border: 2px dashed #b6e2fa;
+    }
+    .subject.destrezas {
+      background: #f0e9ff;
+      color: #7b4fa3;
+      border: 2px solid #ddbaff;
+    }
+    .subject .info {
+      display: none;
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      right: 10px;
+      background: #fff;
+      color: #222;
+      padding: 10px;
+      border-radius: 9px;
+      font-size: 0.97em;
+      box-shadow: 0 2px 8px #d4ebff66;
+      z-index: 99;
+    }
+    .subject:hover .info {
+      display: block;
+    }
+    .legend {
+      display: flex;
+      gap: 24px;
+      margin: 30px 0 10px 0;
+      justify-content: center;
+      font-size: 1em;
+    }
+    .legend .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend .legend-color {
+      width: 18px; height: 18px; border-radius: 4px; display: inline-block;
+    }
+    .legend .oblig { background: #d4ebff; border: 2px solid #b0e1ff; }
+    .legend .opta { background: #f6f8ff; border: 2px dashed #b6e2fa; }
+    .legend .dest { background: #f0e9ff; border: 2px solid #ddbaff; }
+    .legend .compl { background: #e7ffe8; border: 2px solid #b0ffd9; }
+    .footer {
+      text-align: center;
+      margin: 50px 0 20px 0;
+      color: #a9a3b6;
+      font-size: 1em;
+    }
+    @media (max-width: 700px) {
+      .subjects-row { flex-direction: column; }
+      .subject { min-width: unset; width: 100%; }
+      .container { padding: 0 2px; }
+      .photos-list { flex-direction: column; }
+      .photo-card { margin: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>Abogacía</header>
+  <div class="container">
+
+    <!-- Sector General para Fotos -->
+    <section class="photos-section">
+      <h2>Mis fotos y recuerdos</h2>
+      <div id="drop-area">
+        Arrastra imágenes aquí o haz clic para cargar
+        <input type="file" id="fileElem" accept="image/*" style="display:none" multiple>
+      </div>
+      <div class="photos-list" id="photos-list"></div>
+    </section>
+
+    <div class="legend">
+      <div class="legend-item"><span class="legend-color oblig"></span> Obligatoria</div>
+      <div class="legend-item"><span class="legend-color opta"></span> Optativa</div>
+      <div class="legend-item"><span class="legend-color dest"></span> Destrezas</div>
+      <div class="legend-item"><span class="legend-color compl"></span> Aprobada</div>
+    </div>
+
+    <div id="malla"></div>
+  </div>
+  <div class="footer">
+    Malla interactiva de Abogacía &mdash; Colores pastel &copy; 2025
+  </div>
+  <script>
+    // ----- Fotos -----
+    const dropArea = document.getElementById('drop-area');
+    const fileElem = document.getElementById('fileElem');
+    const photosList = document.getElementById('photos-list');
+
+    function showPhotos() {
+      photosList.innerHTML = '';
+      const photos = JSON.parse(localStorage.getItem('abogacia-fotos') || '[]');
+      photos.forEach((src, idx) => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        const img = document.createElement('img');
+        img.src = src;
+        card.appendChild(img);
+        const btn = document.createElement('button');
+        btn.className = 'delete-btn';
+        btn.innerHTML = '✕';
+        btn.onclick = () => {
+          photos.splice(idx, 1);
+          localStorage.setItem('abogacia-fotos', JSON.stringify(photos));
+          showPhotos();
+        };
+        card.appendChild(btn);
+        photosList.appendChild(card);
+      });
+    }
+
+    dropArea.addEventListener('click', () => fileElem.click());
+    dropArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropArea.classList.add('dragover');
+    });
+    dropArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+    });
+    dropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+    fileElem.addEventListener('change', (e) => handleFiles(e.target.files));
+
+    function handleFiles(files) {
+      const photos = JSON.parse(localStorage.getItem('abogacia-fotos') || '[]');
+      Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          photos.push(ev.target.result);
+          localStorage.setItem('abogacia-fotos', JSON.stringify(photos));
+          showPhotos();
+        };
+        reader.readAsDataURL(file);
+      });
+      fileElem.value = '';
+    }
+    showPhotos();
+
+    // ----- Malla -----
+    const materias = [
+      // Año 1
+      { nombre: "Contenidos Transversales para la Construcción de la Ciudadanía", tipo: "oblig", anio: 1, cuatri: 1, correl: [] },
+      { nombre: "Historia del Pensamiento Político y Jurídico", tipo: "oblig", anio: 1, cuatri: 1, correl: [] },
+      { nombre: "Teoría del Derecho y la Justicia", tipo: "oblig", anio: 1, cuatri: 1, correl: [] },
+      { nombre: "Teoría del Estado", tipo: "oblig", anio: 1, cuatri: 2, correl: [] },
+      { nombre: "Nociones de Economía", tipo: "oblig", anio: 1, cuatri: 2, correl: [] },
+      { nombre: "Destrezas I: Investigación y Escritura Jurídicas Básicas", tipo: "destrezas", anio: 1, cuatri: 2, correl: [] },
+
+      // Año 2
+      { nombre: "Lógica", tipo: "oblig", anio: 1, cuatri: 1, correl: ["Contenidos Transversales para la Construcción de la Ciudadanía", "Historia del Pensamiento Político y Jurídico", "Teoría del Derecho y la Justicia"] },
+      { nombre: "Derecho Privado: Teoría de la Rel. Juríd. y de la Persona", tipo: "oblig", anio: 2, cuatri: 1, correl: ["Contenidos Transversales para la Construcción de la Ciudadanía","Teoría del Derecho y la Justicia", "Nociones de Economía","Destrezas I: Investigación y Escritura Jurídicas Básicas"] },
+      { nombre: "Derecho Penal I Parte General", tipo: "oblig", anio: 2, cuatri: 2, correl: ["Derecho Constitucional"] },
+      { nombre: "Derecho Constitucional", tipo: "oblig", anio: 2, cuatri: 1, correl: ["Contenidos Transversales para la Construcción de la Ciudadanía", "Historia del Pensamiento Político y Jurídico", "Teoría del Estado", "Teoría del Derecho y la Justicia"] },
+      { nombre: "Obligaciones Civiles y Comerciales", tipo: "oblig", anio: 2, cuatri: 2, correl: ["Derecho Privado: Teoría de la Rel. Juríd. y de la Persona"] },
+      { nombre: "Nociones de Sociología", tipo: "oblig", anio: 2, cuatri: 2, correl: ["Contenidos Transversales para la Construcción de Ciudadanía", "Historia del Pensamiento Político y Jurídico", "Teoría del Estado"] },
+
+      // Año 3
+      { nombre: "Contratos", tipo: "oblig", anio: 3, cuatri: 1, correl: ["Obligaciones Civiles y Comerciales"] },
+      { nombre: "Derecho Penal II Parte Especial", tipo: "oblig", anio: 3, cuatri: 1, correl: ["Derecho Penal I Parte General"] },
+      { nombre: "Optativa I", tipo: "optativa", anio: 3, cuatri: 1, correl: [] },
+      { nombre: "Derecho Procesal I: Teoría General del Proceso y Proceso Penal", tipo: "oblig", anio: 3, cuatri: 2, correl: ["Derecho Constitucional", "Derecho Privado: Teoría de la Rel. Juríd. y de la Persona", "Derecho Penal II Parte Especial"] },
+      { nombre: "Derecho de la Empresa y los Negocios", tipo: "oblig", anio: 3, cuatri: 2, correl: ["Contratos"] },
+      { nombre: "Derechos Humanos", tipo: "oblig", anio: 3, cuatri: 2, correl: ["Derecho Constitucional"] },
+      { nombre: "Destrezas II: Argumentación Oral y Escrita", tipo: "destrezas", anio: 3, cuatri: 2, correl: ["Destrezas I: Investigación y Escritura Jurídicas Básicas","Lógica","Nociones de Sociología"] },
+
+      // Año 4
+      { nombre: "Derecho Societario y Derecho Cambiario", tipo: "oblig", anio: 4, cuatri: 1, correl: ["Derecho de la Empresa y los Negocios"] },
+      { nombre: "Derecho Procesal II: Proceso Civil y Comercial", tipo: "oblig", anio: 4, cuatri: 1, correl: ["Derecho Procesal I: Teoría General del Proceso y Proceso Penal", "Obligaciones Civiles y Comerciales"] },
+      { nombre: "Derecho Ambiental", tipo: "oblig", anio: 4, cuatri: 1, correl: ["Derecho Constitucional", "Contratos"] },
+      { nombre: "Optativa II", tipo: "optativa", anio: 4, cuatri: 1, correl: [] },
+      { nombre: "Derecho Reales", tipo: "oblig", anio: 4, cuatri: 2, correl: ["Derecho Constitucional", "Contratos"] },
+      { nombre: "Derechos del Consumidor", tipo: "oblig", anio: 4, cuatri: 2, correl: ["Derecho Constitucional", "Contratos"] },
+      { nombre: "Destrezas III: Investigación Jurídica", tipo: "destrezas", anio: 4, cuatri: 2, correl: ["Obligaciones Civiles y Comerciales", "Destrezas II: Argumentación Oral y Escrita", "Derecho Penal I Parte General"] },
+      { nombre: "Derecho del trabajo y derecho de la seguridad social", tipo: "oblig", anio:4, cuatri:2, correl: ["Derecho Constitucional", "Contratos"] },
+    
+      // Año 5
+      { nombre: "Filosofía del Derecho", tipo: "oblig", anio: 5, cuatri: 1, correl: ["Derechos Humanos","Nociones de Sociología"] },
+      { nombre: "Derecho de Familia y de las Sucesiones", tipo: "oblig", anio: 5, cuatri: 1, correl: ["Derecho Reales","Derecho Procesal I: Teoría General del Proceso y Proceso Penal"] },
+      { nombre: "Derecho del Transporte", tipo: "oblig", anio: 5, cuatri: 1, correl: ["Derecho de la Empresa y los Negocios"] },
+      { nombre: "Derecho Administrativo", tipo: "oblig", anio: 5, cuatri: 2, correl: ["derechos reales", "Derecho Procesal II: Proceso Civil y Comercial"] },
+      { nombre: "Optativa III", tipo: "optativa", anio: 5, cuatri: 2, correl: [] },
+      { nombre: "concursos y privilegios", tipo: "oblig", anio: 5, cuatri: 2, correl: ["Derecho Societario y Derecho Cambiario",  "Derecho Procesal I: Teoría General del Proceso y Proceso Penal"] },
+      { nombre: "Destrezas IV: Habilidades para el Litigio", tipo: "destrezas", anio: 5, cuatri: 2, correl: ["Destrezas III: Investigación Jurídica", "Contratos", "Derecho Procesal I: Teoría General del Proceso y Proceso Penal"] },
+      
+
+      // Año 6
+      { nombre: "Derecho Internacional Público y Politica exterior", tipo: "oblig", anio: 6, cuatri: 1, correl: ["Derechos humanos"] },
+      { nombre: "Derecho Tributario y Derecho Financiero", tipo: "oblig", anio: 6, cuatri: 1, correl: ["Derecho Administrativo"] },
+      { nombre: "Optativa IV", tipo: "optativa", anio: 6, cuatri: 1, correl: [] },
+      { nombre: "optativa V", tipo: "optativa", anio: 6, cuatri: 2, correl: [] },
+      { nombre: "Destrezas V: Práctica Profesional Aplicada", tipo: "destrezas", anio: 6, cuatri: 1, correl: ["Derecho de Familia y de las Sucesiones", "Derecho Procesal II: Proceso Civil y Comercial","Destrezas IV: Habilidades para el Litigio"] },
+      { nombre: "Derecho Internacional Privado", tipo: "oblig", anio: 6, cuatri: 2, correl: ["Derecho de Familia y de las Sucesiones","concursos y privilegios"] },
+
+    function renderMalla() {
+      const mallaDiv = document.getElementById('malla');
+      mallaDiv.innerHTML = '';
+      const maxAnio = Math.max(...materias.map(m => m.anio));
+      for (let anio = 1; anio <= maxAnio; anio++) {
+        const yearSection = document.createElement('div');
+        yearSection.className = 'year-section';
+        yearSection.innerHTML = `<div class="year-title">Año ${anio}</div>`;
+        for (let cuatri = 1; cuatri <= 2; cuatri++) {
+          const materiasDeCuatri = materias.filter(m => m.anio === anio && m.cuatri === cuatri);
+          if (materiasDeCuatri.length === 0) continue;
+          const row = document.createElement('div');
+          row.className = 'subjects-row';
+          materiasDeCuatri.forEach(materia => {
+            const div = document.createElement('div');
+            div.className = 'subject ' + materia.tipo;
+            div.setAttribute('data-nombre', materia.nombre);
+            div.setAttribute('data-tipo', materia.tipo);
+            div.innerText = materia.nombre;
+            if (materia.correl.length) {
+              const info = document.createElement('div');
+              info.className = 'info';
+              info.innerHTML = "<b>Correlativas:</b><br>" + materia.correl.map(c => `<span>${c}</span>`).join("<br>");
+              div.appendChild(info);
+            }
+            row.appendChild(div);
+          });
+          yearSection.appendChild(row);
+        }
+        mallaDiv.appendChild(yearSection);
+      }
+    }
+
+    let materiasEstado = {};
+    function updateEstadoUI() {
+      document.querySelectorAll('.subject').forEach(el => {
+        const nombre = el.getAttribute('data-nombre');
+        const tipo = el.getAttribute('data-tipo');
+        const mat = materias.find(m => m.nombre === nombre);
+        const desbloqueada = mat.correl.every(correl => materiasEstado[correl] === true);
+        if (materiasEstado[nombre]) {
+          el.classList.add('completed');
+          el.classList.remove('unlocked');
+        } else if (desbloqueada || tipo === "optativa" || tipo === "destrezas") {
+          el.classList.remove('completed');
+          el.classList.add('unlocked');
+        } else {
+          el.classList.remove('completed');
+          el.classList.remove('unlocked');
+        }
+      });
+    }
+    function saveEstado() {
+      localStorage.setItem('abogacia-malla', JSON.stringify(materiasEstado));
+    }
+    function loadEstado() {
+      materiasEstado = {};
+      try {
+        const data = JSON.parse(localStorage.getItem('abogacia-malla') || '{}');
+        materias.forEach(m => materiasEstado[m.nombre] = !!data[m.nombre]);
+      } catch {
+        materias.forEach(m => materiasEstado[m.nombre] = false);
+      }
+    }
+
+    function setupClicks() {
+      document.querySelectorAll('.subject').forEach(el => {
+        el.onclick = (e) => {
+          e.preventDefault();
+          const nombre = el.getAttribute('data-nombre');
+          const mat = materias.find(m => m.nombre === nombre);
+          const desbloqueada = mat.correl.every(correl => materiasEstado[correl] === true) ||
+            mat.tipo === "optativa" || mat.tipo === "destrezas";
+          if (!desbloqueada) return;
+          materiasEstado[nombre] = !materiasEstado[nombre];
+          saveEstado();
+          updateEstadoUI();
+        }
+      });
+    }
+
+    function main() {
+      loadEstado();
+      renderMalla();
+      updateEstadoUI();
+      setupClicks();
+    }
+
+    main();
+  </script>
+</body>
+</html>
